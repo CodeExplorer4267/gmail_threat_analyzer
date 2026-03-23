@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "Gmail Threat Analyzer",
+  "version": "1.0",
+  "description": "Detect malicious URLs, domains, and attachments in Gmail",
+
+  "permissions": [
+    "storage",
+    "tabs",
+    "scripting"
+  ],
+
+  "host_permissions": [
+    "https://mail.google.com/*"
+  ],
+
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["https://mail.google.com/*"],
+      "js": ["content.js"]
+    }
+  ],
+
+  "action": {
+    "default_popup": "popup/popup.html"
+  },
+
+  "options_page": "admin/index.html"
+}

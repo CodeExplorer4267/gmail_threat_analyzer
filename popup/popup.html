@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+<main class="app-shell">
+<header class="hero">
+<div>
+<p class="eyebrow">Gmail Message Intelligence</p>
+<h1>Threat Analyzer</h1>
+<p id="syncLabel" class="hero-copy">Waiting for Gmail data...</p>
+</div>
+<div class="hero-mark">TA</div>
+</header>
+
+<section class="stats-grid">
+<article class="stat-card">
+<span class="stat-label">URLs</span>
+<span id="urlCount" class="stat-value">0</span>
+</article>
+<article class="stat-card">
+<span class="stat-label">Domains</span>
+<span id="domainCount" class="stat-value">0</span>
+</article>
+<article class="stat-card">
+<span class="stat-label">Attachments</span>
+<span id="attachCount" class="stat-value">0</span>
+</article>
+</section>
+
+<section class="toolbar">
+<button id="domainBtn" class="analysis-btn">Domain Analysis</button>
+<button id="urlBtn" class="analysis-btn">URL Analysis</button>
+<button id="attachBtn" class="analysis-btn">Attachment Analysis</button>
+</section>
+
+<section id="result" class="result-panel">
+<p class="empty">Open a Gmail message, then reopen this popup to see a detailed report.</p>
+</section>
+</main>
+
+<script type="module" src="popup.js"></script>
+</body>
+</html>

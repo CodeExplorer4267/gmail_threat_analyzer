@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threat Analyzer Admin Panel</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-mark">TA</div>
+                <div>
+                    <p class="eyebrow">Admin Console</p>
+                    <h1>Threat Analyzer</h1>
+                </div>
+            </div>
+
+            <nav class="nav">
+                <a href="#overview" class="nav-link is-active">Overview</a>
+                <a href="#workflow" class="nav-link">Workflow</a>
+                <a href="#pipeline" class="nav-link">Pipeline Health</a>
+                <a href="#feed" class="nav-link">Threat Feed</a>
+                <a href="#storage" class="nav-link">Firestore Sync</a>
+            </nav>
+
+            <section class="sidebar-panel">
+                <p class="panel-label">System Status</p>
+                <div class="status-item">
+                    <span class="status-dot online"></span>
+                    <span id="statusScan">Waiting for scan data</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-dot online"></span>
+                    <span id="statusFeed">No threat records yet</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-dot warn"></span>
+                    <span id="statusStore">Storage not populated yet</span>
+                </div>
+            </section>
+        </aside>
+
+        <main class="content">
+            <section id="overview" class="hero">
+                <div class="hero-copy">
+                    <p class="eyebrow">Extension to Dashboard Workflow</p>
+                    <h2>Admin panel for end-to-end Gmail threat analysis.</h2>
+                    <p>
+                        This dashboard is built around the workflow you described: Gmail email scanning,
+                        API-based threat detection, backend ingestion, Firestore persistence, and React dashboard reporting.
+                    </p>
+                </div>
+                <div class="hero-card">
+                    <p class="hero-card-label">Live Posture</p>
+                    <div class="hero-score">
+                        <strong id="heroThreatScore">08</strong>
+                        <span>High priority threats under review</span>
+                    </div>
+                    <div class="hero-meta">
+                        <div>
+                            <span>Emails scanned</span>
+                            <strong id="heroScans">1,284</strong>
+                        </div>
+                        <div>
+                            <span>Latest sync</span>
+                            <strong id="heroLastSync">Waiting</strong>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="metrics-grid">
+                <article class="metric-card">
+                    <span class="metric-label">Emails Analyzed</span>
+                    <strong class="metric-value" id="metricScans">0</strong>
+                    <p class="metric-copy">Unique email records captured from the extension and stored for review.</p>
+                </article>
+                <article class="metric-card">
+                    <span class="metric-label">Threat Events</span>
+                    <strong class="metric-value" id="metricThreats">0</strong>
+                    <p class="metric-copy">URLs, domains, and attachments flagged for review.</p>
+                </article>
+                <article class="metric-card">
+                    <span class="metric-label">Stored Records</span>
+                    <strong class="metric-value" id="metricWrites">0</strong>
+                    <p class="metric-copy">Message-level analysis records currently available to the dashboard.</p>
+                </article>
+                <article class="metric-card">
+                    <span class="metric-label">Unique Domains</span>
+                    <strong class="metric-value" id="metricViewers">0</strong>
+                    <p class="metric-copy">Distinct domains discovered across all analyzed Gmail records.</p>
+                </article>
+            </section>
+
+            <section id="workflow" class="section">
+                <div class="section-head">
+                    <div>
+                        <p class="eyebrow">Workflow Map</p>
+                        <h3>How data moves through the system</h3>
+                    </div>
+                </div>
+
+                <div class="workflow-grid">
+                    <article class="workflow-card">
+                        <span class="workflow-step">01</span>
+                        <h4>User opens Gmail</h4>
+                        <p>The browser extension activates inside Gmail when a user opens or views a message.</p>
+                    </article>
+                    <article class="workflow-card">
+                        <span class="workflow-step">02</span>
+                        <h4>Extension scans content</h4>
+                        <p>URLs, domains, and attachments are extracted from the message body and metadata.</p>
+                    </article>
+                    <article class="workflow-card">
+                        <span class="workflow-step">03</span>
+                        <h4>Threat APIs evaluate risk</h4>
+                        <p>VirusTotal, Safe Browsing, or similar intelligence services validate the extracted indicators.</p>
+                    </article>
+                    <article class="workflow-card">
+                        <span class="workflow-step">04</span>
+                        <h4>Results sent to backend</h4>
+                        <p>The extension forwards enriched analysis output to Firebase functions or a custom API.</p>
+                    </article>
+                    <article class="workflow-card">
+                        <span class="workflow-step">05</span>
+                        <h4>Firestore stores events</h4>
+                        <p>Threat records, timestamps, verdicts, and audit metadata are persisted for reporting.</p>
+                    </article>
+                    <article class="workflow-card">
+                        <span class="workflow-step">06</span>
+                        <h4>React dashboard visualizes</h4>
+                        <p>Admins review system health, incoming detections, trends, and investigation queues.</p>
+                    </article>
+                </div>
+            </section>
+
+            <section id="pipeline" class="section two-column">
+                <article class="panel">
+                    <div class="section-head">
+                        <div>
+                            <p class="eyebrow">Pipeline Health</p>
+                            <h3>Operational checkpoints</h3>
+                        </div>
+                    </div>
+                    <div id="pipelineHealth" class="pipeline-list"></div>
+                </article>
+
+                <article class="panel">
+                    <div class="section-head">
+                        <div>
+                            <p class="eyebrow">Threat Mix</p>
+                            <h3>Detection distribution</h3>
+                        </div>
+                    </div>
+                    <div class="bars">
+                        <div class="bar-row">
+                            <div class="bar-copy">
+                                <span>Clean messages</span>
+                                <strong id="barCleanLabel">0%</strong>
+                            </div>
+                            <div class="bar-track"><span id="barClean" class="bar-fill safe"></span></div>
+                        </div>
+                        <div class="bar-row">
+                            <div class="bar-copy">
+                                <span>Suspicious URLs</span>
+                                <strong id="barUrlsLabel">0%</strong>
+                            </div>
+                            <div class="bar-track"><span id="barUrls" class="bar-fill warn"></span></div>
+                        </div>
+                        <div class="bar-row">
+                            <div class="bar-copy">
+                                <span>Risky domains</span>
+                                <strong id="barDomainsLabel">0%</strong>
+                            </div>
+                            <div class="bar-track"><span id="barDomains" class="bar-fill danger"></span></div>
+                        </div>
+                        <div class="bar-row">
+                            <div class="bar-copy">
+                                <span>Malicious attachments</span>
+                                <strong id="barAttachmentsLabel">0%</strong>
+                            </div>
+                            <div class="bar-track"><span id="barAttachments" class="bar-fill accent"></span></div>
+                        </div>
+                    </div>
+                </article>
+            </section>
+
+            <section id="feed" class="section two-column">
+                <article class="panel wide-panel">
+                    <div class="section-head">
+                        <div>
+                            <p class="eyebrow">Threat Feed</p>
+                            <h3>Recent analysis records</h3>
+                        </div>
+                        <div class="filters">
+                            <button class="filter is-active" data-filter="all">All</button>
+                            <button class="filter" data-filter="danger">High Risk</button>
+                            <button class="filter" data-filter="warn">Needs Review</button>
+                            <button class="filter" data-filter="safe">Clean</button>
+                        </div>
+                    </div>
+
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Subject</th>
+                                    <th>Sender</th>
+                                    <th>Primary Finding</th>
+                                    <th>Status</th>
+                                    <th>Stored</th>
+                                </tr>
+                            </thead>
+                            <tbody id="threatTable"></tbody>
+                        </table>
+                    </div>
+                </article>
+
+                <article class="panel">
+                    <div class="section-head">
+                        <div>
+                            <p class="eyebrow">Investigation Queue</p>
+                            <h3>Analyst priorities</h3>
+                        </div>
+                    </div>
+                    <div id="investigationQueue" class="stack-list"></div>
+                </article>
+            </section>
+
+            <section id="storage" class="section two-column">
+                <article class="panel">
+                    <div class="section-head">
+                        <div>
+                            <p class="eyebrow">Firestore Sync</p>
+                            <h3>Backend storage snapshots</h3>
+                        </div>
+                    </div>
+                    <div id="storageCards" class="storage-grid"></div>
+                </article>
+
+                <article class="panel">
+                    <div class="section-head">
+                        <div>
+                            <p class="eyebrow">Admin Activity</p>
+                            <h3>Recent operator actions</h3>
+                        </div>
+                    </div>
+                    <div id="activityTimeline" class="timeline"></div>
+                </article>
+            </section>
+        </main>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
