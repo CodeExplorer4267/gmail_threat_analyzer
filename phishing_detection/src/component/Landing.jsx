@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { FaFacebook, FaInstagram, FaLinkedin, FaShieldAlt } from "react-icons/fa";
 import { IoMailOpenOutline } from "react-icons/io5";
@@ -112,7 +112,7 @@ const LandingPage = () => {
 
         <section className="grid min-h-[calc(100vh-9rem)] items-center gap-14 py-16 lg:grid-cols-[1.08fr_0.92fr] lg:py-24">
           <div className="max-w-3xl text-left">
-            <motion.div
+            <Motion.div
               custom={0}
               initial="hidden"
               animate="visible"
@@ -121,9 +121,9 @@ const LandingPage = () => {
             >
               <span className="h-2 w-2 rounded-full bg-violet-300 shadow-[0_0_14px_rgba(196,181,253,0.85)]" />
               Website, email, and file protection in one platform
-            </motion.div>
+            </Motion.div>
             
-            <motion.h2
+            <Motion.h2
               custom={1}
               initial="hidden"
               animate="visible"
@@ -133,9 +133,9 @@ const LandingPage = () => {
               Detect phishing attacks before
               <span className="bg-gradient-to-r from-violet-200 via-fuchsia-300 to-purple-400 bg-clip-text text-transparent"> websites, emails, or files</span>
               {" "}turn into incidents.
-            </motion.h2>
+            </Motion.h2>
 
-            <motion.p
+            <Motion.p
               custom={2}
               initial="hidden"
               animate="visible"
@@ -144,9 +144,9 @@ const LandingPage = () => {
             >
               Protect users from malicious links, deceptive messages, and dangerous attachments
               with a dark, modern detection system built for fast security decisions.
-            </motion.p>
+            </Motion.p>
 
-            <motion.div
+            <Motion.div
               custom={3}
               initial="hidden"
               animate="visible"
@@ -163,9 +163,9 @@ const LandingPage = () => {
               <button className="rounded-full border border-violet-300/35 bg-slate-950/40 px-8 py-4 text-base font-semibold text-violet-100 transition hover:-translate-y-1 hover:border-violet-200 hover:bg-violet-400/10">
                 View Threat Demo
               </button>
-            </motion.div>
+            </Motion.div>
 
-            <motion.div
+            <Motion.div
               custom={4}
               initial="hidden"
               animate="visible"
@@ -181,10 +181,10 @@ const LandingPage = () => {
                   <p className="mt-2 text-sm text-slate-400">{item.label}</p>
                 </div>
               ))}
-            </motion.div>
+            </Motion.div>
           </div>
 
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, x: 48 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
@@ -247,7 +247,7 @@ const LandingPage = () => {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </Motion.div>
         </section>
 
         <section id="features" className="py-10">
@@ -260,7 +260,7 @@ const LandingPage = () => {
 
           <div className="mt-14 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {features.map((item, index) => (
-              <motion.div
+              <Motion.div
                 key={item.title}
                 initial="hidden"
                 whileInView="visible"
@@ -275,7 +275,7 @@ const LandingPage = () => {
                 </div>
                 <h3 className="mt-6 text-2xl font-semibold text-white">{item.title}</h3>
                 <p className="mt-4 text-base leading-7 text-slate-400">{item.desc}</p>
-              </motion.div>
+              </Motion.div>
             ))}
           </div>
         </section>
@@ -294,7 +294,7 @@ const LandingPage = () => {
 
           <div className="grid gap-4">
             {workflow.map((item, index) => (
-              <motion.div
+              <Motion.div
                 key={item}
                 initial={{ opacity: 0, x: 24 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -306,7 +306,7 @@ const LandingPage = () => {
                   0{index + 1}
                 </div>
                 <p className="text-base leading-7 text-slate-300">{item}</p>
-              </motion.div>
+              </Motion.div>
             ))}
           </div>
         </section>

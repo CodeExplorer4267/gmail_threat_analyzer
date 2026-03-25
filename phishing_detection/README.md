@@ -1,16 +1,41 @@
-# React + Vite
+# Threat Shield Frontend + Node Backend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This app now includes a small Express backend for Gmail OTP login.
 
-Currently, two official plugins are available:
+## Run locally
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Open two terminals inside [phishing_detection](C:/Users/Rupam/Documents/projects/gmail_threat_detection/phishing_detection):
 
-## React Compiler
+```powershell
+npm run dev:server
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```powershell
+npm run dev:client
+```
 
-## Expanding the ESLint configuration
+The frontend runs on `http://localhost:5173` and proxies `/api` requests to the backend on `http://localhost:5000`.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Backend routes
+
+- `GET /api/health`
+- `GET /api/auth/session`
+- `POST /api/auth/send-otp`
+- `POST /api/auth/verify-otp`
+- `POST /api/auth/logout`
+
+## Real Gmail OTP delivery
+
+Without SMTP config, the backend still works in demo mode and returns a preview OTP to the UI.
+
+To send real emails in PowerShell before starting the server:
+
+```powershell
+$env:SMTP_USER="your-gmail@gmail.com"
+$env:SMTP_PASS="your-app-password"
+$env:SMTP_FROM="your-gmail@gmail.com"
+$env:SESSION_SECRET="replace-this-secret"
+npm run dev:server
+```
+
+If you deploy this, move OTP/session storage from in-memory state to a database or Redis.
