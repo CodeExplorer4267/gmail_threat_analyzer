@@ -7,6 +7,7 @@ import { HiOutlineChartBarSquare, HiOutlineBellAlert } from "react-icons/hi2";
 import { LuScanSearch, LuArrowRight } from "react-icons/lu";
 import { FaCircleCheck, FaLocationDot, FaXTwitter } from "react-icons/fa6";
 import { SiGmail } from "react-icons/si";
+import ShinyText from "../animated/ShinyText";
 
 const features = [
   {
@@ -121,7 +122,7 @@ const LandingPage = () => {
               <span className="h-2 w-2 rounded-full bg-violet-300 shadow-[0_0_14px_rgba(196,181,253,0.85)]" />
               Website, email, and file protection in one platform
             </motion.div>
-
+            
             <motion.h2
               custom={1}
               initial="hidden"
