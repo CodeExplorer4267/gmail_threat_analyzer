@@ -77,7 +77,7 @@ const LandingPage = () => {
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    navigate("/register");
+    navigate("/login");
   };
 
   return (
