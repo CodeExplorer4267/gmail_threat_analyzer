@@ -63,6 +63,7 @@ const Login = () => {
   const [session, setSession] = useState(null);
   const [isLoadingSession, setIsLoadingSession] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [otpDelivery, setOtpDelivery] = useState("");
 
   useEffect(() => {
     let isMounted = true;
@@ -108,12 +109,14 @@ const Login = () => {
 
     setIsSubmitting(true);
     try {
+        
       const data = await apiRequest("/auth/send-otp", {
         method: "POST",
         body: JSON.stringify({ email: normalizedEmail }),
       });
-
+      console.log("OTP send response:", data);
       setEmail(normalizedEmail);
+      setOtpDelivery(data.delivery || "");
       setPreviewOtp(data.previewOtp || "");
       setStep("otp");
       setOtp("");
@@ -140,6 +143,7 @@ const Login = () => {
 
       setSession(data.session);
       setEmail(data.session.email);
+      setOtpDelivery("");
       setPreviewOtp("");
       setOtp("");
       setError("");
@@ -163,6 +167,7 @@ const Login = () => {
       setSession(null);
       setEmail("");
       setOtp("");
+      setOtpDelivery("");
       setPreviewOtp("");
       setMessage("");
       setError("");
@@ -377,9 +382,24 @@ const Login = () => {
                       <div className="text-sm leading-6 text-slate-300">
                         <p>OTP codes stay valid for 10 minutes.</p>
                         <p>Verified sessions stay active for 3 days on this device.</p>
+                        {step === "otp" && otpDelivery === "email" ? (
+                          <p>Check your Gmail inbox, spam, and promotions tabs for the OTP email.</p>
+                        ) : null}
                       </div>
                     </div>
                   </div>
+
+                  {step === "otp" && otpDelivery === "email" ? (
+                    <div className="rounded-[1.5rem] border border-sky-300/20 bg-sky-400/10 p-4 text-sm text-sky-100">
+                      OTP was sent through the backend mail service to <span className="font-semibold">{email}</span>.
+                    </div>
+                  ) : null}
+
+                  {step === "otp" && otpDelivery === "preview-fallback" ? (
+                    <div className="rounded-[1.5rem] border border-amber-300/20 bg-amber-400/10 p-4 text-sm text-amber-100">
+                      Gmail delivery failed, so the frontend is showing a dev preview OTP below.
+                    </div>
+                  ) : null}
 
                   {previewOtp ? (
                     <div className="rounded-[1.5rem] border border-violet-300/20 bg-violet-400/10 p-4 text-sm text-violet-100">
