@@ -76,7 +76,16 @@ const quickSignals = [
 const LandingPage = () => {
   const navigate = useNavigate();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
+    try {
+      const response = await fetch("/api/auth/session", { credentials: "include" });
+      if (response.ok) {
+        navigate("/dashboard");
+        return;
+      }
+    } catch {
+      // Fall through to login when the session check fails.
+    }
     navigate("/login");
   };
 

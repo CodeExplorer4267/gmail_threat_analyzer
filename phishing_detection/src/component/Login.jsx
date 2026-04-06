@@ -77,7 +77,7 @@ const Login = () => {
 
         setSession(data.session);
         setEmail(data.session.email);
-        setMessage("Welcome back. Your session is still active.");
+        navigate("/dashboard", { replace: true });
       } catch {
         if (!isMounted) {
           return;
@@ -96,7 +96,7 @@ const Login = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [navigate]);
 
   const handleSendOtp = async () => {
     const normalizedEmail = email.trim().toLowerCase();
@@ -114,7 +114,6 @@ const Login = () => {
         method: "POST",
         body: JSON.stringify({ email: normalizedEmail }),
       });
-      console.log("OTP send response:", data);
       setEmail(normalizedEmail);
       setOtpDelivery(data.delivery || "");
       setPreviewOtp(data.previewOtp || "");
@@ -148,6 +147,7 @@ const Login = () => {
       setOtp("");
       setError("");
       setMessage(data.message);
+      navigate("/dashboard", { replace: true });
     } catch (requestError) {
       setError(requestError.message);
       setMessage("");
@@ -327,7 +327,7 @@ const Login = () => {
                   <div className="grid gap-3 sm:grid-cols-2">
                     <button
                       className="rounded-2xl bg-violet-400 px-5 py-4 font-semibold text-slate-950 transition hover:bg-violet-300"
-                      onClick={() => navigate("/")}
+                      onClick={() => navigate("/dashboard")}
                     >
                       Continue to Platform
                     </button>

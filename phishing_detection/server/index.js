@@ -5,6 +5,12 @@ import session from "express-session";
 import nodemailer from "nodemailer";
 import { fileURLToPath } from "node:url";
 import dotenv from "dotenv";
+import {
+  FILE_SCAN_JSON_LIMIT,
+  FILE_SCAN_MAX_BYTES,
+  FILE_SCAN_MAX_MB,
+  scanUploadedFile,
+} from "./fileScanner.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -22,7 +28,7 @@ const SESSION_DURATION = 3 * 24 * 60 * 60 * 1000;
 const OTP_DURATION = 10 * 60 * 1000;
 const SMTP_USER = process.env.SMTP_USER?.trim() || "";
 const SMTP_PASS = process.env.SMTP_PASS?.replace(/\s+/g, "") || "";
-const SMTP_FROM =  SMTP_USER;
+const SMTP_FROM = process.env.SMTP_FROM?.trim() || SMTP_USER;
 const HAS_SMTP_CONFIG = Boolean(SMTP_USER && SMTP_PASS);
 
 const otpStore = new Map();
@@ -33,7 +39,7 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.json());
+app.use(express.json({ limit: FILE_SCAN_JSON_LIMIT }));
 app.use(
   session({
     name: "threat-shield-session",
@@ -78,7 +84,7 @@ async function sendOtpEmail(email, code) {
   }
 
   await transporter.sendMail({
-    from: "rupambhadra478@gmail.com",
+    from: SMTP_FROM || SMTP_USER,
     to: email,
     subject: "Your Threat Shield OTP",
     text: `Your Threat Shield OTP is ${code}. It expires in 10 minutes.`,
@@ -105,6 +111,16 @@ function getSessionPayload(req) {
   }
 
   return user;
+}
+
+function requireAuthenticatedSession(req, res, next) {
+  const activeSession = getSessionPayload(req);
+  if (!activeSession) {
+    return res.status(401).json({ message: "Authentication required." });
+  }
+
+  req.userSession = activeSession;
+  return next();
 }
 
 app.get("/api/health", (_req, res) => {
@@ -170,12 +186,12 @@ app.post("/api/auth/send-otp", async (req, res) => {
     }
   }
 
-  // return res.json({
-  //   message: `OTP generated for ${email}. Configure SMTP_USER and SMTP_PASS to send real email.`,
-  //   expiresAt,
-  //   delivery: "preview",
-  //   previewOtp: code,
-  
+  return res.json({
+    message: `OTP generated for ${email}. Configure SMTP_USER and SMTP_PASS to send real email.`,
+    expiresAt,
+    delivery: "preview",
+    previewOtp: code,
+  });
 });
 
 app.post("/api/auth/verify-otp", (req, res) => {
@@ -218,7 +234,59 @@ app.post("/api/auth/logout", (req, res) => {
   });
 });
 
+app.post("/api/files/scan", requireAuthenticatedSession, (req, res) => {
+  const fileName = String(req.body?.fileName || "").trim();
+  const mimeType = String(req.body?.mimeType || "").trim();
+  const fileSize = Number(req.body?.fileSize || 0);
+  const base64Data = String(req.body?.base64Data || "").trim();
+
+  if (!fileName || !base64Data) {
+    return res.status(400).json({ message: "A file name and base64 payload are required." });
+  }
+
+  const estimatedBytes = Math.floor((base64Data.length * 3) / 4);
+  if (estimatedBytes > FILE_SCAN_MAX_BYTES * 1.1) {
+    return res.status(413).json({
+      message: `Files larger than ${FILE_SCAN_MAX_MB} MB are not accepted for this in-memory scan.`,
+    });
+  }
+
+  const buffer = Buffer.from(base64Data, "base64");
+  if (!buffer.length) {
+    return res.status(400).json({ message: "The uploaded payload could not be decoded." });
+  }
+
+  if (buffer.length > FILE_SCAN_MAX_BYTES) {
+    return res.status(413).json({
+      message: `Files larger than ${FILE_SCAN_MAX_MB} MB are not accepted for this in-memory scan.`,
+    });
+  }
+
+  try {
+    const scan = scanUploadedFile({
+      fileName,
+      declaredMime: mimeType,
+      declaredSize: fileSize,
+      buffer,
+    });
+
+    return res.json({
+      scan,
+      scannedBy: req.userSession.email,
+      limits: {
+        maxFileSizeMb: FILE_SCAN_MAX_MB,
+      },
+    });
+  } catch (error) {
+    console.error("File scan failed:", error);
+    return res.status(500).json({
+      message: "The file could not be scanned right now.",
+    });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Threat Shield backend listening on http://localhost:${PORT}`);
   console.log(HAS_SMTP_CONFIG ? "SMTP mode enabled." : "SMTP mode disabled. Using preview OTP mode.");
+  console.log(`File scan limit: ${FILE_SCAN_MAX_MB} MB per file.`);
 });
